@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1D3F94">
+  <meta name="description" content="Catalog ครัวเรือนยากจนเป้าหมาย จังหวัดสงขลา — ช่องทางให้หน่วยงานภาคเอกชนร่วมช่วยเหลือ (CSR)">
+  <title>Catalog ครัวเรือนยากจน สงขลา</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="apple-touch-icon" href="img/logo-cdd.png">
+  <link rel="stylesheet" href="css/app.css?v=0b6cf4cd">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/">
+      <span class="brand-logos">
+        <img src="img/logo-cdd.png" alt="ตรากรมการพัฒนาชุมชน" width="36" height="37">
+        <img src="img/seal-songkhla.png" alt="ตราจังหวัดสงขลา" width="36" height="36">
+      </span>
+      <span class="brand-text"><b>Catalog ครัวเรือนยากจน</b><small>จังหวัดสงขลา · ร่วมช่วยเหลือด้วย CSR</small></span>
+    </a>
+    <nav class="topnav" aria-label="เมนูหลัก">
+      <a href="#/" data-nav="home">หน้าแรก</a>
+      <a href="#/list" data-nav="list">ครัวเรือน</a>
+      <a href="#/ebook" data-nav="ebook">E-book</a>
+      <a href="#/sponsors" data-nav="sponsors">ผู้สนับสนุน</a>
+      <a href="#/about" data-nav="about">วิธีช่วยเหลือ</a>
+    </nav>
+  </header>
+
+  <main id="view" tabindex="-1"></main>
+
+  <nav class="bottomnav" aria-label="เมนูหลัก">
+    <a href="#/" data-nav="home"><span aria-hidden="true">🏠</span>หน้าแรก</a>
+    <a href="#/list" data-nav="list"><span aria-hidden="true">📋</span>ครัวเรือน</a>
+    <a href="#/ebook" data-nav="ebook"><span aria-hidden="true">📖</span>E-book</a>
+    <a href="#/sponsors" data-nav="sponsors"><span aria-hidden="true">🏅</span>ผู้สนับสนุน</a>
+    <a href="#/about" data-nav="about"><span aria-hidden="true">ℹ️</span>วิธีช่วย</a>
+  </nav>
+
+  <div id="print-root" aria-hidden="true"></div>
+  <script>
+    // แสดงข้อผิดพลาดบนหน้าเว็บแทนหน้าว่าง (ในแอป LINE/มือถือดู console ไม่ได้)
+    (function () {
+      function show(msg) {
+        var v = document.getElementById('view');
+        if (!v || v.querySelector('.boot-error')) return;
+        if (v.innerHTML.trim() && !v.querySelector('.loading')) return;
+        v.innerHTML = '<div class="empty-state box boot-error"><h1>เปิดหน้าเว็บไม่สำเร็จ</h1><p>' +
+          String(msg || '').replace(/</g, '&lt;') + '</p><button class="btn btn-cta" onclick="location.reload()">ลองใหม่</button></div>';
+      }
+      window.addEventListener('error', function (e) { show(e.message); });
+      window.addEventListener('unhandledrejection', function (e) { show(e.reason && e.reason.message); });
+    })();
+  </script>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>
+  <script src="js/config.js?v=2b4bf305" defer></script>
+  <script src="js/api.js?v=d6f39bde" defer></script>
+  <script src="js/common.js?v=8a78726d" defer></script>
+  <script src="js/ebook.js?v=7e187b99" defer></script>
+  <script src="js/report.js?v=e13b6494" defer></script>
+  <script src="js/staff.js?v=8f8c2641" defer></script>
+  <script src="js/app.js?v=fb402639" defer></script>
+</body>
+</html>
