@@ -107,7 +107,7 @@ window.API = (() => {
 
   // ---------- เจ้าหน้าที่ (Staff.gs) — ทดลองในเครื่องใช้ข้อมูลจำลอง รหัสอำเภอ 123456 จังหวัด 000000 ----------
   const STAFF_FNS = ['staffLogin', 'staffLogout', 'staffList', 'staffSave', 'staffPhotos', 'staffUploadPhoto',
-    'staffPledges', 'staffUpdatePledge', 'staffReports', 'staffReportSave', 'staffReportPhotos', 'staffReportUploadPhoto',
+    'staffDelete', 'staffPledges', 'staffUpdatePledge', 'staffReports', 'staffReportSave', 'staffReportPhotos', 'staffReportUploadPhoto',
     'staffReportDelete'];
 
   async function staffCall(fn, ...args) {
@@ -203,6 +203,14 @@ window.API = (() => {
       staffUploadPhoto(token, id, slot, dataUrl) {
         photos[id] = photos[id] || ['', '', '', ''];
         photos[id][slot] = dataUrl;
+        return { ok: true };
+      },
+      async staffDelete(token, id) {
+        const c = allowed(token, String(id).split('-')[0]);
+        const list = await all();
+        const i = list.findIndex(x => x.id === id && x.amphoeCode === c);
+        if (i < 0) return { ok: false, error: 'ไม่พบครัวเรือน ' + id };
+        list.splice(i, 1);
         return { ok: true };
       },
       staffPledges: () => ({ ok: true, pledges: pledges.slice(), statuses: ['ใหม่', 'ติดต่อแล้ว', 'กำลังดำเนินการ', 'ส่งมอบแล้ว', 'ยกเลิก'] }),

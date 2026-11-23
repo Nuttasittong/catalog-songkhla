@@ -288,6 +288,11 @@ window.Staff = (() => {
         <label>หมายเหตุภายใน (ไม่แสดงบนเว็บ)<textarea name="note" rows="2" placeholder="เช่น เบอร์โทรครัวเรือน">${esc(h.note)}</textarea></label>
       </section>
 
+      ${isNew ? '' : `<section class="box danger-zone"><h2>ลบครัวเรือน</h2>
+        <p class="muted small">ใช้เมื่อกรอกซ้ำ กรอกผิดคน หรือครัวเรือนไม่อยู่ในเป้าหมายแล้ว — ถ้าแค่ไม่อยากให้แสดงบนเว็บ ให้เอาเครื่องหมาย “อนุมัติให้แสดงบนเว็บ” ออกแทน</p>
+        <button type="button" class="btn btn-danger" id="hh-delete">🗑️ ลบครัวเรือนนี้</button>
+      </section>`}
+
       <div class="save-bar">
         <p class="form-error" role="alert"></p>
         <a class="btn btn-outline" href="#/staff/list" id="hh-cancel">ยกเลิก</a>
@@ -374,7 +379,30 @@ window.Staff = (() => {
       }
     });
 
-    if (!isNew) bindPhotos(view, h.id);
+    if (!isNew) {
+      bindPhotos(view, h.id);
+      $('#hh-delete', view).addEventListener('click', async e => {
+        const btn = e.currentTarget;
+        const ok = await UI.ask(`ลบ ${h.name} (${h.id}) ออกจาก Catalog?\n\n` +
+          'ครัวเรือนจะหายจากหน้าเว็บและ E-book ทันที ข้อมูลเดิมเก็บไว้ในแท็บ “ครัวเรือนที่ลบ” ของ Google Sheet ' +
+          '(ผู้ดูแลจังหวัดกู้คืนได้) · รายงานผลที่เคยเขียนไว้ยังอยู่', '🗑️ ลบครัวเรือน', true);
+        if (!ok) return;
+        btn.disabled = true;
+        btn.textContent = 'กำลังลบ…';
+        try {
+          await call('delete', h.id);
+          listCache.households = listCache.households.filter(x => x.id !== h.id);
+          API.clearCache();
+          dirty = false;
+          App.toast('ลบ ' + h.name + ' แล้ว');
+          location.hash = '#/staff/list';
+        } catch (ex) {
+          App.toast(ex.message);
+          btn.disabled = false;
+          btn.textContent = '🗑️ ลบครัวเรือนนี้';
+        }
+      });
+    }
   }
 
   // ---------- รูปภาพ ----------
