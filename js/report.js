@@ -1,4 +1,5 @@
-// แบบรายงานผลการติดตามการช่วยเหลือ/การประกอบอาชีพ (หน้าเจ้าหน้าที่) — กรอกผ่านเว็บ อัปโหลดรูป และพิมพ์เป็นหน้า A4
+// แบบรายงานผลการช่วยเหลือครัวเรือนเป้าหมาย (หน้าเจ้าหน้าที่) — กรอกผ่านเว็บ อัปโหลดรูป และพิมพ์เป็นหน้า A4
+// ผู้ได้รับความช่วยเหลือเลือกจากครัวเรือนใน Catalog เท่านั้น
 // เส้นทาง: #/staff/reports · #/staff/report/new?hh=<รหัสครัวเรือน>|from=<รหัสรายงาน> · #/staff/report/edit/<id> · #/staff/report/view/<id>
 window.StaffReport = (() => {
   const { esc, enc } = UI;
@@ -7,28 +8,24 @@ window.StaffReport = (() => {
   const DEFAULTS = 'catalog-report-defaults';
   const ACCEPT = 'image/jpeg,image/png,image/webp,image/heic,image/heif';
 
-  // ช่องรูป 7 ช่อง (ต้องตรงกับ REPORT_PHOTOS ใน Report.gs)
+  // ช่องรูป 5 ช่อง (ต้องตรงกับ REPORT_PHOTOS ใน Report.gs)
   const PHOTOS = [
-    ['🧑‍🍳', 'ภาพการประกอบอาชีพ 1'], ['🧑‍🍳', 'ภาพการประกอบอาชีพ 2'], ['🧑‍🍳', 'ภาพการประกอบอาชีพ 3'],
+    ['🤝', 'ภาพการช่วยเหลือ 1'], ['🤝', 'ภาพการช่วยเหลือ 2'], ['🤝', 'ภาพการช่วยเหลือ 3'],
     ['🙂', 'ภาพผู้ได้รับความช่วยเหลือ'], ['🏠', 'ภาพที่อยู่อาศัย'],
-    ['🏪', 'ภาพสถานที่ประกอบอาชีพ 1'], ['🏪', 'ภาพสถานที่ประกอบอาชีพ 2'],
   ];
   const PHOTO_GROUPS = [
-    ['ภาพการประกอบอาชีพ (แถวบนของรายงาน)', [0, 1, 2]],
+    ['ภาพการช่วยเหลือ (แถวบนของรายงาน)', [0, 1, 2]],
     ['ภาพผู้ได้รับความช่วยเหลือ และที่อยู่อาศัย', [3, 4]],
-    ['ภาพสถานที่ประกอบอาชีพ (เปลี่ยนภาพทุกครั้งที่รายงาน)', [5, 6]],
   ];
-  const WORK_STATUSES = ['ทำทุกวัน', 'ทำบางวัน', 'หยุดชั่วคราว', 'เลิกประกอบอาชีพ'];
 
   let ctx = null;          // ฟังก์ชันจาก Staff: call, staffBar, bindBar, loadList, current, store, shrink
   let cache = null;        // { code, reports }
-  const photoCache = {};   // id -> [dataUrl x7]
+  const photoCache = {};   // id -> [dataUrl x5]
 
   const today = () => {
     const d = new Date();
     return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   };
-  const baht = v => (v === '' || v == null ? '' : Number(v).toLocaleString('th-TH'));
 
   async function loadReports(force) {
     if (!force && cache && cache.code === ctx.current()) return cache;
@@ -62,11 +59,11 @@ window.StaffReport = (() => {
     const st = { s: sponsors.includes(q.get('s')) ? q.get('s') : '', q: q.get('q') || '' };
     view.innerHTML = `${ctx.staffBar('อ.' + list.amphoe.name)}
       <div class="page-head"><h1>📝 รายงานผลการช่วยเหลือ</h1>
-        <p class="muted">แบบรายงานผลการติดตามการประกอบอาชีพของครัวเรือนเป้าหมาย 1 รายงานต่อ 1 หน้า A4 · พิมพ์หรือบันทึกเป็น PDF ได้</p></div>
+        <p class="muted">แบบรายงานผลการช่วยเหลือครัวเรือนเป้าหมาย 1 รายงานต่อ 1 หน้า A4 · พิมพ์หรือบันทึกเป็น PDF ได้</p></div>
       <div class="rp-tools">
         ${sponsors.length > 1 ? `<select id="rp-sponsor" aria-label="ผู้ให้การช่วยเหลือ"><option value="">ทุกผู้ให้การช่วยเหลือ</option>
           ${sponsors.map(s => `<option${s === st.s ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select>` : ''}
-        <input type="search" id="rp-q" class="staff-search" placeholder="🔍 ค้นหาชื่อ รหัส อาชีพ" value="${esc(st.q)}">
+        <input type="search" id="rp-q" class="staff-search" placeholder="🔍 ค้นหาชื่อ รหัส ผู้ให้การช่วยเหลือ" value="${esc(st.q)}">
         <button class="btn btn-small btn-outline" id="rp-print-all">🖨️ พิมพ์ทั้งหมด</button>
       </div>
       <div id="rp-items" class="staff-list"></div>
@@ -85,8 +82,7 @@ window.StaffReport = (() => {
       $('#rp-print-all', view).disabled = !rows.length;
       $('#rp-items', view).innerHTML = rows.length ? rows.map(r => `<a class="staff-item" href="#/staff/report/view/${enc(r.id)}">
           <div class="si-main"><b>${esc(r.name)}</b><small>${esc(r.id)} · ครั้งที่ ${esc(r.round)} · ${UI.thaiDate(r.reportDate)}</small></div>
-          <div class="si-tags">${r.occupation ? `<span class="badge st-pledged">💼 ${esc(r.occupation)}</span>` : ''}
-            ${r.workStatus ? `<span class="badge ${/เลิก|หยุด/.test(r.workStatus) ? 'urg-3' : 'st-done'}">${esc(r.workStatus)}</span>` : ''}
+          <div class="si-tags">${r.hhId ? `<span class="badge st-pledged">🏠 ${esc(r.hhId)}</span>` : ''}
             ${r.sponsor ? `<span class="badge st-wait">🤝 ${esc(r.sponsor)}</span>` : ''}</div></a>`).join('')
         : `<div class="empty-state box">${reports.length ? 'ไม่พบรายงานที่ค้นหา' : 'ยังไม่มีรายงาน — กด “＋ รายงานใหม่” เพื่อเริ่มกรอก'}</div>`;
     };
@@ -139,25 +135,23 @@ window.StaffReport = (() => {
 
   function pageHtml(r, photos) {
     photos = photos || [];
-    const p = i => photo(photos[i], i);
     const top = [0, 1, 2].filter(i => photos[i]);
     const topSlots = top.length >= 2 ? top : [0, 1, 2];
     const logo = path => `<img src="${UI.asset(path)}" alt="">`;
     return `<div class="pg rp">${FRAME}
       <header class="rp-head">${logo('img/logo-cdd.png')}
-        <div><b>แบบรายงานผลการติดตามการประกอบอาชีพของครัวเรือนเป้าหมาย</b>
+        <div><b>แบบรายงานผลการช่วยเหลือครัวเรือนเป้าหมาย</b>
           ${r.project ? `<span>${esc(r.project).replace(/\n/g, '<br>')}</span>` : ''}
-          ${r.sponsor ? `<span>ระหว่าง กรมการพัฒนาชุมชน กับ ${esc(r.sponsor)}</span>` : ''}
-          ${r.phase ? `<span>${esc(r.phase)}</span>` : ''}</div>
+          ${r.sponsor ? `<span>ระหว่าง กรมการพัฒนาชุมชน กับ ${esc(r.sponsor)}</span>` : ''}</div>
         ${logo('img/seal-songkhla.png')}</header>
       <div class="rp-place"><b>จังหวัดสงขลา อำเภอ${esc(r.amphoe)}</b>
         <span>ครั้งที่ ${esc(r.round || 1)} · ${UI.thaiDate(r.reportDate)}</span></div>
-      <div class="rp-row rp-top n${topSlots.length}">${topSlots.map(p).join('')}</div>
+      <div class="rp-row rp-top n${topSlots.length}">${topSlots.map(i => photo(photos[i], i, 'ภาพการช่วยเหลือ')).join('')}</div>
       <div class="rp-mid">
         <div class="rp-col">
           ${photo(photos[3], 3, 'ภาพของผู้ที่ได้รับความช่วยเหลือ')}
-          <div class="rp-box">${item(6, 'อุปกรณ์ที่ได้รับ', r.equipment)}${item(7, 'สถานการณ์ประกอบอาชีพ', r.workStatus)}
-            ${item(8, 'รายได้ต่อเดือน', baht(r.income), 'บาท')}${item(9, 'รายได้หลังหักค่าใช้จ่าย', baht(r.netIncome), 'บาท')}</div>
+          <div class="rp-box"><p class="rp-item"><span>6. รายละเอียดการช่วยเหลือ</span></p>
+            <p class="rp-text">${esc(r.helpDetail || '-').replace(/\n/g, '<br>')}</p></div>
         </div>
         <div class="rp-col">
           <div class="rp-box">${item(1, 'ชื่อ - นามสกุล', r.name)}${item(2, 'อายุ', r.age, 'ปี')}
@@ -166,12 +160,10 @@ window.StaffReport = (() => {
           ${photo(photos[4], 4, 'ภาพที่อยู่อาศัยของผู้ได้รับความช่วยเหลือ')}
         </div>
       </div>
-      <div class="rp-row rp-work">${photo(photos[5], 5, 'ภาพสถานที่ประกอบอาชีพของผู้ได้รับความช่วยเหลือ')}
-        ${photo(photos[6], 6, 'ภาพสถานที่ประกอบอาชีพของผู้ได้รับความช่วยเหลือ')}</div>
       <div class="rp-row rp-end">
-        <div class="rp-box"><p class="rp-item"><span>10. ความเปลี่ยนแปลงด้านคุณภาพชีวิต</span></p>
+        <div class="rp-box"><p class="rp-item"><span>7. ความเปลี่ยนแปลงด้านคุณภาพชีวิต</span></p>
           <p class="rp-text">${esc(r.change || '-').replace(/\n/g, '<br>')}</p></div>
-        <div class="rp-box"><p class="rp-item"><span>11. ปัญหา/อุปสรรค</span></p>
+        <div class="rp-box"><p class="rp-item"><span>8. ปัญหา/อุปสรรค</span></p>
           <p class="rp-text">${esc(r.problems || '-').replace(/\n/g, '<br>')}</p></div>
       </div>
       <footer class="rp-foot">${r.reporter ? `ผู้รายงาน: ${esc(r.reporter)}${r.reporterPhone ? ' โทร ' + esc(r.reporterPhone) : ''}` : ''}
@@ -259,12 +251,12 @@ window.StaffReport = (() => {
       if (!r) throw new Error('ไม่พบรายงาน ' + id);
     } else {
       const from = reports.find(x => x.id === q.get('from'));
-      const base = { sponsor: def.sponsor || '', project: def.project || '', phase: def.phase || '',
+      const base = { sponsor: def.sponsor || '', project: def.project || '',
         reporter: def.reporter || '', reporterPhone: def.reporterPhone || '' };
-      r = Object.assign({ hhId: '', round: 1, name: '', age: '', members: '', occupation: '', workplace: '', equipment: '',
-        workStatus: '', income: '', netIncome: '', change: '', problems: '' }, base);
+      r = Object.assign({ hhId: '', round: 1, name: '', age: '', members: '', occupation: '', workplace: '', helpDetail: '',
+        change: '', problems: '' }, base);
       if (from) { // รายงานครั้งถัดไป: ยกข้อมูลเดิมมา เปลี่ยนเฉพาะผลลัพธ์และรูป
-        const keep = ['hhId', 'sponsor', 'project', 'phase', 'name', 'age', 'members', 'occupation', 'workplace', 'equipment', 'workStatus', 'income', 'netIncome'];
+        const keep = ['hhId', 'sponsor', 'project', 'name', 'age', 'members', 'occupation', 'workplace', 'helpDetail'];
         keep.forEach(k => { r[k] = from[k]; });
         const rounds = reports.filter(x => (from.hhId ? x.hhId === from.hhId : x.name === from.name) && x.sponsor === from.sponsor).map(x => Number(x.round) || 1);
         r.round = Math.max(...rounds, 1) + 1;
@@ -275,7 +267,6 @@ window.StaffReport = (() => {
     }
     const sponsors = [...new Set(reports.map(x => x.sponsor).concat(def.sponsor || []).filter(Boolean))];
     const projects = [...new Set(reports.map(x => x.project).filter(Boolean))];
-    const phases = [...new Set(reports.map(x => x.phase).filter(Boolean))];
     const occupations = [...new Set(reports.map(x => x.occupation).filter(Boolean))];
     const households = list.households.slice().sort((a, b) => a.name.localeCompare(b.name, 'th'));
     const opts = arr => arr.map(v => `<option value="${esc(v)}">`).join('');
@@ -291,20 +282,20 @@ window.StaffReport = (() => {
         <label>โครงการ/บันทึกข้อตกลง (หัวรายงาน)<textarea name="project" rows="2"
           placeholder="เช่น ภายใต้บันทึกข้อตกลงความร่วมมือในการแก้ไขปัญหาความยากจนเชิงบูรณาการ">${esc(r.project)}</textarea></label>
         ${projects.some(p => p !== r.project) ? `<div class="chips wrap rp-suggest">${projects.filter(p => p !== r.project).slice(0, 3).map(p => `<button type="button" class="chip" data-fill="project" data-value="${esc(p)}">↺ ${esc(p.length > 40 ? p.slice(0, 40) + '…' : p)}</button>`).join('')}</div>` : ''}
-        <div class="three rp-three">
-          <label>ระยะ/พื้นที่<input name="phase" list="rp-phases" value="${esc(r.phase)}" placeholder="ระยะที่ 4 ภาคใต้">
-            <datalist id="rp-phases">${opts(phases)}</datalist></label>
+        <div class="two">
           <label>ครั้งที่รายงาน<input name="round" type="number" inputmode="numeric" min="1" max="99" value="${esc(r.round)}"></label>
           <label>วันที่ติดตาม<input name="reportDate" type="date" value="${esc(r.reportDate)}"></label>
         </div>
       </section>
 
       <section class="box"><h2>ผู้ได้รับความช่วยเหลือ</h2>
-        <label>เลือกจากครัวเรือนใน Catalog (ถ้ามี)
-          <select name="hhId"><option value="">— ไม่อยู่ใน Catalog / กรอกเอง —</option>
+        ${households.length ? '' : `<p class="notice">ยังไม่มีครัวเรือนของอำเภอนี้ใน Catalog —
+          <a href="#/staff/new">＋ เพิ่มครัวเรือน</a> ก่อน แล้วจึงเขียนรายงานได้</p>`}
+        <label>1. ชื่อ-นามสกุล (เลือกจากครัวเรือนใน Catalog) <em>*</em>
+          <select name="hhId" required><option value="">— เลือกผู้ได้รับความช่วยเหลือ —</option>
             ${households.map(h => `<option value="${esc(h.id)}"${h.id === r.hhId ? ' selected' : ''}>${esc(h.name)} (${esc(h.id)} · ${UI.address(h)})</option>`).join('')}
+            ${r.hhId && !households.some(h => h.id === r.hhId) ? `<option value="${esc(r.hhId)}" selected>${esc(r.name)} (${esc(r.hhId)})</option>` : ''}
           </select></label>
-        <label>1. ชื่อ-นามสกุล <em>*</em><input name="name" required value="${esc(r.name)}" placeholder="เช่น นางสมใจ ใจดี"></label>
         <div class="two">
           <label>2. อายุ (ปี)<input name="age" type="number" inputmode="numeric" min="0" max="120" value="${esc(r.age)}"></label>
           <label>3. จำนวนสมาชิกในครัวเรือน (คน)<input name="members" type="number" inputmode="numeric" min="0" max="50" value="${esc(r.members)}"></label>
@@ -315,23 +306,15 @@ window.StaffReport = (() => {
         <button type="button" class="btn btn-small btn-light" id="rp-use-addr" hidden>📍 ใช้ที่อยู่บ้านจาก Catalog</button>
       </section>
 
-      <section class="box"><h2>ผลการประกอบอาชีพ</h2>
-        <label>6. อุปกรณ์ที่ได้รับ<input name="equipment" value="${esc(r.equipment)}" placeholder="เช่น อุปกรณ์ทำขนม จักรเย็บผ้า"></label>
-        <p class="field-label">7. สถานการณ์ประกอบอาชีพ</p>
-        <div class="seg rp-seg">${WORK_STATUSES.map(s => `<label><input type="radio" name="workStatus" value="${esc(s)}"${s === r.workStatus ? ' checked' : ''}><span>${esc(s)}</span></label>`).join('')}</div>
-        <input name="workStatusOther" aria-label="สถานการณ์อื่น ๆ" placeholder="หรือพิมพ์เอง เช่น ทำเฉพาะวันหยุด"
-          value="${esc(WORK_STATUSES.includes(r.workStatus) ? '' : r.workStatus)}">
-        <div class="two">
-          <label>8. รายได้ต่อเดือน (บาท)<input name="income" type="number" inputmode="numeric" min="0" step="100" value="${esc(r.income)}"></label>
-          <label>9. รายได้หลังหักค่าใช้จ่าย (บาท)<input name="netIncome" type="number" inputmode="numeric" min="0" step="100" value="${esc(r.netIncome)}"></label>
-        </div>
-        <p class="form-hint" id="rp-income-hint"></p>
+      <section class="box"><h2>รายละเอียดการช่วยเหลือ</h2>
+        <label>6. รายละเอียดการช่วยเหลือ<textarea name="helpDetail" rows="5"
+          placeholder="เล่าว่าได้รับความช่วยเหลืออะไร จากใคร เมื่อไร เช่น ได้รับอุปกรณ์ทำขนม (เตาแก๊ส หม้อนึ่ง ถาดอบ) จากมูลนิธิ… ส่งมอบเมื่อ…">${esc(r.helpDetail)}</textarea></label>
       </section>
 
       <section class="box"><h2>ผลลัพธ์</h2>
-        <label>10. ความเปลี่ยนแปลงด้านคุณภาพชีวิต<textarea name="change" rows="3"
-          placeholder="เช่น ครอบครัวมีรายได้มากขึ้น สะดวกในการประกอบอาชีพมากขึ้น เนื่องจากมีอุปกรณ์ที่ดีขึ้น">${esc(r.change)}</textarea></label>
-        <label>11. ปัญหา/อุปสรรค<textarea name="problems" rows="2" placeholder="ไม่มี ให้เว้นว่าง">${esc(r.problems)}</textarea></label>
+        <label>7. ความเปลี่ยนแปลงด้านคุณภาพชีวิต<textarea name="change" rows="3"
+          placeholder="เช่น ครอบครัวมีรายได้มากขึ้น มีที่อยู่อาศัยปลอดภัยขึ้น">${esc(r.change)}</textarea></label>
+        <label>8. ปัญหา/อุปสรรค<textarea name="problems" rows="2" placeholder="ไม่มี ให้เว้นว่าง">${esc(r.problems)}</textarea></label>
       </section>
 
       <section class="box"><h2>รูปภาพ</h2>
@@ -375,10 +358,7 @@ window.StaffReport = (() => {
     const syncAddr = () => { addrBtn.hidden = !selectedHh(); };
     form.hhId.addEventListener('change', () => {
       const h = selectedHh();
-      if (h) {
-        form.name.value = h.name;
-        if (h.members) form.members.value = h.members;
-      }
+      if (h && h.members) form.members.value = h.members;
       syncAddr();
     });
     addrBtn.addEventListener('click', () => {
@@ -396,20 +376,6 @@ window.StaffReport = (() => {
       dirty = true;
     }));
 
-    // สถานการณ์ประกอบอาชีพ: เลือกปุ่ม หรือพิมพ์เอง (อย่างใดอย่างหนึ่ง)
-    form.workStatusOther.addEventListener('input', () => {
-      if (form.workStatusOther.value.trim()) $$('input[name="workStatus"]', form).forEach(x => { x.checked = false; });
-    });
-    $$('input[name="workStatus"]', form).forEach(x => x.addEventListener('change', () => { form.workStatusOther.value = ''; }));
-
-    const hint = () => {
-      const a = Number(form.income.value) || 0;
-      const b = Number(form.netIncome.value) || 0;
-      $('#rp-income-hint', form).textContent = a && b > a ? '⚠️ รายได้หลังหักค่าใช้จ่ายมากกว่ารายได้ต่อเดือน กรุณาตรวจสอบ' : '';
-    };
-    form.income.addEventListener('input', hint);
-    form.netIncome.addEventListener('input', hint);
-
     const pending = {}; // รูปที่เลือกไว้ก่อนบันทึกรายงานใหม่: slot -> dataUrl
     bindPhotos(view, isNew ? null : r.id, pending);
 
@@ -418,22 +384,20 @@ window.StaffReport = (() => {
       const err = $('.save-bar .form-error', view);
       err.textContent = '';
       const val = n => form[n].value.trim();
-      const status = ($('input[name="workStatus"]:checked', form) || {}).value || val('workStatusOther');
       const data = {
         id: r.id, amphoeCode: ctx.current(), hhId: form.hhId.value, round: val('round'), reportDate: val('reportDate'),
-        sponsor: val('sponsor'), project: val('project'), phase: val('phase'), name: val('name'), age: val('age'),
-        members: val('members'), occupation: val('occupation'), workplace: val('workplace'), equipment: val('equipment'),
-        workStatus: status, income: val('income'), netIncome: val('netIncome'), change: val('change'),
-        problems: val('problems'), reporter: val('reporter'), reporterPhone: val('reporterPhone'),
+        sponsor: val('sponsor'), project: val('project'), age: val('age'),
+        members: val('members'), occupation: val('occupation'), workplace: val('workplace'), helpDetail: val('helpDetail'),
+        change: val('change'), problems: val('problems'), reporter: val('reporter'), reporterPhone: val('reporterPhone'),
       };
-      if (!data.name) { err.textContent = 'กรุณากรอกชื่อ-นามสกุลผู้ได้รับความช่วยเหลือ'; form.name.focus(); return; }
+      if (!data.hhId) { err.textContent = 'กรุณาเลือกผู้ได้รับความช่วยเหลือจากรายการครัวเรือนใน Catalog'; form.hhId.focus(); return; }
       const btn = $('button[type=submit]', form);
       btn.disabled = true;
       btn.textContent = 'กำลังบันทึก…';
       try {
         const out = await ctx.call('reportSave', data);
         const saved = out.report;
-        ctx.store.set(DEFAULTS, { sponsor: data.sponsor, project: data.project, phase: data.phase,
+        ctx.store.set(DEFAULTS, { sponsor: data.sponsor, project: data.project,
           reporter: data.reporter, reporterPhone: data.reporterPhone });
         const i = cache.reports.findIndex(x => x.id === saved.id);
         if (i >= 0) cache.reports[i] = saved; else cache.reports.unshift(saved);

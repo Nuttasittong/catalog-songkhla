@@ -607,12 +607,12 @@ main { max-width: 1120px; margin: 0 auto; padding: 16px; outline: none; }
 .rp-place b { font-family: var(--font-head); font-size: 2.6cqw; color: var(--brand-ink); }
 .rp-place span { font-size: 2cqw; color: var(--muted); white-space: nowrap; }
 .rp-row { display: grid; gap: 1.6cqw; }
-.rp-top { height: 23cqw; grid-template-columns: repeat(3, 1fr); }
+.rp-top { height: 27cqw; grid-template-columns: repeat(3, 1fr); }
 .rp-top.n2 { grid-template-columns: 1fr 1fr; }
-.rp-mid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8cqw; height: 46cqw; }
+.rp-mid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8cqw; height: 54cqw; }
 .rp-col { display: flex; flex-direction: column; gap: 1.4cqw; min-height: 0; }
-.rp-col .rp-p3 { height: 25cqw; flex-shrink: 0; }
-.rp-col .rp-p4 { height: 17cqw; flex-shrink: 0; }
+.rp-col .rp-p3 { height: 28cqw; flex-shrink: 0; }
+.rp-col .rp-p4 { height: 24cqw; flex-shrink: 0; }
 .rp-col .rp-box { flex: 1; }
 .rp-work { height: 16cqw; grid-template-columns: 1fr 1fr; }
 .rp-end { flex: 1 1 auto; min-height: 0; grid-template-columns: 1fr 1fr; }

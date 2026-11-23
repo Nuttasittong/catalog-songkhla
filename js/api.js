@@ -136,10 +136,10 @@ window.API = (() => {
     const photos = {};
     const reportPhotos = {};
     const reports = [
-      { id: 'RP-RN-0001', amphoeCode: 'RN', amphoe: 'ระโนด', hhId: '', round: 1, reportDate: '2026-11-10',
-        sponsor: 'มูลนิธิตัวอย่าง', project: 'ภายใต้บันทึกข้อตกลงความร่วมมือในการแก้ไขปัญหาความยากจนเชิงบูรณาการ', phase: 'ระยะที่ 4 ภาคใต้',
-        name: 'นางตัวอย่าง ทดลองดี', age: 63, members: 4, occupation: 'ค้าขาย', workplace: 'ทำขนมส่งขายตามตลาดอำเภอระโนด',
-        equipment: 'อุปกรณ์ทำขนม', workStatus: 'ทำทุกวัน', income: 9000, netIncome: 6000,
+      { id: 'RP-RN-0001', amphoeCode: 'RN', amphoe: 'ระโนด', hhId: 'RN-0001', round: 1, reportDate: '2026-11-10',
+        sponsor: 'มูลนิธิตัวอย่าง', project: 'ภายใต้บันทึกข้อตกลงความร่วมมือในการแก้ไขปัญหาความยากจนเชิงบูรณาการ',
+        name: 'นายตัวอย่าง หนึ่ง', age: 63, members: 4, occupation: 'ค้าขาย', workplace: 'ทำขนมส่งขายตามตลาดอำเภอระโนด',
+        helpDetail: 'ได้รับอุปกรณ์ทำขนม ได้แก่ เตาแก๊ส หม้อนึ่ง และถาดอบ จากมูลนิธิตัวอย่าง ส่งมอบเมื่อ 1 พ.ย. 2569',
         change: '- ครอบครัวมีรายได้มากขึ้น สะดวกในการประกอบอาชีพทำขนมมากขึ้น เนื่องจากมีอุปกรณ์ในการทำที่ดีขึ้น',
         problems: '', reporter: 'นายพัฒนากร ทดสอบ', reporterPhone: '08x-xxx-xxxx' },
     ];
@@ -217,7 +217,8 @@ window.API = (() => {
       },
       async staffReportSave(token, r) {
         const c = allowed(token, r.id ? r.id.split('-')[1] : r.amphoeCode);
-        if (!r.name) return { ok: false, error: 'กรุณากรอกชื่อ-นามสกุลผู้ได้รับความช่วยเหลือ' };
+        const hh = (await all()).find(x => x.id === r.hhId && x.amphoeCode === c);
+        if (!hh) return { ok: false, error: 'กรุณาเลือกผู้ได้รับความช่วยเหลือจากรายการครัวเรือนใน Catalog' };
         const d = await load();
         let row = reports.find(x => x.id === r.id);
         if (!row) {
@@ -226,8 +227,8 @@ window.API = (() => {
           reports.unshift(row);
         }
         const num = v => (Number(v) > 0 ? Number(v) : '');
-        Object.assign(row, r, { id: row.id, amphoeCode: c, amphoe: d.amphoes.find(x => x.code === c).name,
-          round: num(r.round) || 1, age: num(r.age), members: num(r.members), income: num(r.income), netIncome: num(r.netIncome) });
+        Object.assign(row, r, { id: row.id, amphoeCode: c, amphoe: d.amphoes.find(x => x.code === c).name, name: hh.name,
+          round: num(r.round) || 1, age: num(r.age), members: num(r.members) || num(hh.members) });
         return { ok: true, report: Object.assign({}, row) };
       },
       staffReportPhotos: (token, id) => ({ ok: true, photos: (reportPhotos[id] || new Array(7).fill('')).slice() }),
