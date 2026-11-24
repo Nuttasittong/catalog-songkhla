@@ -20,6 +20,13 @@ window.Staff = (() => {
   let session = store.get(KEY) || store.get(KEY, true);
   let listCache = null; // { code, households, tambons }
 
+  // คู่มือเจ้าหน้าที่ (web/manual/) — อยู่บนหน้าเว็บหลัก (GitHub Pages) เสมอ แม้เปิดจากลิงก์ Apps Script
+  const manualUrl = () => {
+    const site = String(window.APP_CONFIG.SITE_URL || '').replace(/#.*$/, '');
+    return (site && !/script\.google/.test(site) ? site.replace(/\/?$/, '/') : '') + 'manual/';
+  };
+  const manualLink = label => `<a href="${esc(manualUrl())}" target="_blank" rel="noopener">${label}</a>`;
+
   function setSession(s) {
     session = s;
     listCache = null;
@@ -88,6 +95,7 @@ window.Staff = (() => {
         <button class="btn btn-cta btn-block" type="submit">เข้าสู่ระบบ</button>
       </form>
       <p class="muted small">ขอรหัสได้จากผู้ดูแลระบบระดับจังหวัด · เข้าใช้ได้ครั้งละ 6 ชั่วโมง</p>
+      <p class="small">${manualLink('📖 คู่มือการใช้งานสำหรับเจ้าหน้าที่ (มีภาพประกอบ)')}</p>
     </div>`;
     const form = $('#staff-login');
     form.addEventListener('submit', async e => {
@@ -124,6 +132,7 @@ window.Staff = (() => {
         <a class="btn btn-small btn-outline" href="#/staff/list">📋 ครัวเรือน</a>
         <a class="btn btn-small btn-outline" href="#/staff/reports">📝 รายงานผล</a>
         <a class="btn btn-small btn-outline" href="#/staff/pledges">📨 ผู้ประสงค์ช่วยเหลือ</a>
+        <a class="btn btn-small btn-outline" href="${esc(manualUrl())}" target="_blank" rel="noopener">📖 คู่มือ</a>
         <button class="btn btn-small btn-light" id="staff-logout">ออกจากระบบ</button>
       </div>
     </div>`;

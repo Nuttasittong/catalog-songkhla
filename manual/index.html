@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1D3F94">
+  <title>คู่มือเจ้าหน้าที่อำเภอ · Catalog ครัวเรือนยากจน สงขลา</title>
+  <meta name="description" content="คู่มือการใช้งานหน้าเว็บสำหรับเจ้าหน้าที่อำเภอ: เข้าระบบ เพิ่ม/แก้/ลบครัวเรือน ใส่รูป ติดตามผู้แสดงความประสงค์ช่วยเหลือ และเขียนรายงานผลการช่วยเหลือ">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../img/favicon.png">
+  <style>
+    :root {
+      --brand: #1D3F94; --brand-ink: #132B6B; --brand-soft: #E8EEFB; --gold: #C9A43B; --cta: #E8590C;
+      --ink: #1B2420; --muted: #5B6661; --line: #DFE4EE; --bg: #F4F6FA; --surface: #fff; --mark: #E11D48;
+      --font: 'Sarabun', 'Leelawadee UI', 'Thonburi', sans-serif; --head: 'Prompt', 'Sarabun', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.65 var(--font); }
+    h1, h2, h3 { font-family: var(--head); line-height: 1.3; margin: 0 0 .4em; font-weight: 600; color: var(--brand-ink); }
+    a { color: var(--brand); }
+    img { max-width: 100%; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px 48px; }
+
+    /* ปก */
+    .cover { background: var(--brand); color: #fff; padding: 28px 16px 32px; position: relative; overflow: hidden; }
+    .cover::after { content: ''; position: absolute; right: -60px; bottom: -70px; width: 260px; height: 260px; border-radius: 50%;
+      border: 18px solid rgba(201, 164, 59, .55); }
+    .cover .wrap { padding-bottom: 0; position: relative; z-index: 1; }
+    .logos { display: inline-flex; gap: 8px; padding: 6px 12px; background: #fff; border-radius: 999px; margin-bottom: 16px; }
+    .logos img { width: 44px; height: 44px; object-fit: contain; }
+    .cover h1 { color: #fff; font-size: 1.8rem; margin-bottom: 6px; }
+    .cover p { margin: 0; opacity: .92; }
+    .cover .meta { margin-top: 14px; font-size: .92rem; opacity: .85; }
+
+    /* สารบัญ + กล่องลิงก์ */
+    .card { background: var(--surface); border-radius: 16px; padding: 18px 20px; margin: 18px 0; box-shadow: 0 1px 2px rgba(16,40,32,.06), 0 4px 16px rgba(16,40,32,.06); }
+    .link-box { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+    .link-box .qr { width: 128px; height: 128px; flex: none; }
+    .link-box .qr svg { width: 100%; height: 100%; }
+    .link-box code { font-size: .95rem; word-break: break-all; background: var(--brand-soft); padding: 2px 8px; border-radius: 6px; }
+    .toc ol { margin: 0; padding-left: 1.3em; columns: 2; column-gap: 28px; }
+    .toc li { break-inside: avoid; margin-bottom: 4px; }
+    .can { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-top: 8px; }
+    .can div { background: var(--brand-soft); border-radius: 12px; padding: 12px 14px; }
+    .can b { display: block; color: var(--brand-ink); font-family: var(--head); font-weight: 600; }
+
+    /* ส่วนเนื้อหา */
+    .part { margin-top: 34px; }
+    .part h2 { display: flex; align-items: center; gap: 10px; font-size: 1.45rem; padding-bottom: 8px; border-bottom: 3px solid var(--gold); }
+    .part h2 .no { flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--brand); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .step { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; margin: 18px 0; }
+    .step .shot { justify-self: center; width: 100%; max-width: 300px; }
+    .step .shot img { display: block; width: 100%; border-radius: 22px; border: 6px solid #1B2420; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+    .step .shot.paper img { border-radius: 4px; border: 1px solid var(--line); }
+    .step .shot figcaption { text-align: center; font-size: .85rem; color: var(--muted); margin-top: 6px; }
+    .step h3 { font-size: 1.15rem; }
+    .step ol, .step ul { margin: .3em 0 .6em; padding-left: 1.3em; }
+    .step li { margin-bottom: .35em; }
+    .mark { color: var(--mark); font-weight: 700; }
+    .tip, .warn { border-radius: 12px; padding: 10px 14px; margin: .6em 0; font-size: .96rem; }
+    .tip { background: #E9F7EE; border: 1px solid #B7E2C4; }
+    .warn { background: #FFF5E6; border: 1px solid #F5D29B; }
+    .btnlike { display: inline-block; padding: 0 8px; border-radius: 8px; background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; white-space: nowrap; }
+    .btnlike.cta { background: var(--cta); color: #fff; }
+    .btnlike.red { background: #B42318; color: #fff; }
+    table.faq { width: 100%; border-collapse: collapse; }
+    table.faq td { vertical-align: top; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+    table.faq td:first-child { width: 38%; font-weight: 600; color: var(--brand-ink); }
+    footer { text-align: center; color: var(--muted); font-size: .9rem; margin-top: 36px; }
+    .print-btn { position: fixed; right: 16px; bottom: 16px; z-index: 5; border: 0; border-radius: 999px; padding: 12px 18px;
+      background: var(--cta); color: #fff; font: 600 1rem var(--font); box-shadow: 0 6px 18px rgba(232,89,12,.35); cursor: pointer; }
+
+    @media (min-width: 720px) {
+      .cover h1 { font-size: 2.3rem; }
+      .step { grid-template-columns: 1fr 270px; gap: 28px; }
+      .step.flip { grid-template-columns: 270px 1fr; }
+      .step.flip .shot { order: -1; }
+      .step.wide { grid-template-columns: 1fr 360px; }
+      .step.wide .shot { max-width: 360px; }
+    }
+    @media (max-width: 560px) { .toc ol { columns: 1; } }
+
+    @page { size: A4; margin: 14mm 14mm 16mm; }
+    @media print {
+      body { background: #fff; font-size: 14.5px; }
+      .print-btn, .no-print { display: none !important; }
+      .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; border-radius: 12px; }
+      .card { box-shadow: none; border: 1px solid var(--line); }
+      .wrap { max-width: none; padding: 0; }
+      .part { margin-top: 22px; }
+      .card, .keep-group, .step { break-inside: avoid; }
+      .step { grid-template-columns: 1fr 175px; gap: 18px; margin: 12px 0; }
+      .step.flip { grid-template-columns: 175px 1fr; }
+      .step.wide { grid-template-columns: 1fr 270px; }
+      .step .shot { max-width: 175px; }
+      .step.wide .shot { max-width: 270px; }
+      .step .shot figcaption { font-size: .78rem; }
+      .cover { padding: 20px 16px 22px; }
+      .step .shot img { border-width: 4px; border-radius: 16px; box-shadow: none; }
+      .can div, .tip, .warn, .btnlike, .part h2 .no { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="wrap">
+      <span class="logos"><img src="../img/logo-cdd.png" alt="ตรากรมการพัฒนาชุมชน"><img src="../img/seal-songkhla.png" alt="ตราจังหวัดสงขลา"></span>
+      <h1>คู่มือการใช้งานสำหรับเจ้าหน้าที่อำเภอ</h1>
+      <p>ระบบ Catalog ครัวเรือนยากจน จังหวัดสงขลา — บันทึกข้อมูลครัวเรือน ใส่รูป และรายงานผลการช่วยเหลือผ่านมือถือ</p>
+      <p class="meta">สำนักงานพัฒนาชุมชนจังหวัดสงขลา · ฉบับเดือนพฤศจิกายน 2569</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card link-box">
+      <div class="qr" id="qr" aria-label="QR Code หน้าเจ้าหน้าที่"></div>
+      <div>
+        <h2 style="font-size:1.2rem">เปิดหน้าเจ้าหน้าที่</h2>
+        <p style="margin:0 0 6px">สแกน QR หรือเปิดลิงก์นี้ในมือถือ แล้ว<b>เพิ่มไว้ที่หน้าจอหลัก</b> (บุ๊กมาร์ก) เพื่อเปิดครั้งต่อไปได้เร็ว</p>
+        <code id="staff-url">https://nuttasittong.github.io/catalog-songkhla/#/staff</code>
+        <p style="margin:8px 0 0" class="muted">หรือเปิดหน้าเว็บ Catalog จากริชเมนู LINE แล้วกดปุ่ม <span class="btnlike">🔐 เจ้าหน้าที่</span> มุมขวาบน</p>
+        <p style="margin:8px 0 0" class="no-print"><a href="catalog-staff-manual.pdf" download>⬇️ ดาวน์โหลดคู่มือเป็นไฟล์ PDF</a> (ไว้พิมพ์หรือส่งต่อทาง LINE)</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 style="font-size:1.2rem">เจ้าหน้าที่ทำอะไรได้บ้าง</h2>
+      <div class="can">
+        <div><b>📋 ครัวเรือน</b>เพิ่ม แก้ไข ลบ ข้อมูลครัวเรือนของอำเภอ ถ่ายรูปจากมือถือได้เลย</div>
+        <div><b>📨 ผู้ประสงค์ช่วยเหลือ</b>ดูหน่วยงานที่กด “ฉันอยากช่วย” และบันทึกการติดต่อ</div>
+        <div><b>📝 รายงานผล</b>เขียนรายงานผลการช่วยเหลือ 1 หน้า A4 พร้อมรูป พิมพ์/บันทึก PDF</div>
+      </div>
+      <p class="tip" style="margin-top:14px">✅ <b>สิ่งที่ต้องมี:</b> มือถือหรือคอมพิวเตอร์ที่ต่ออินเทอร์เน็ต และ<b>รหัสเจ้าหน้าที่ 6 หลัก</b>ของอำเภอ (ขอจากผู้ดูแลระบบ สพจ.สงขลา) — ไม่ต้องลงแอปเพิ่ม ไม่ต้องใช้บัญชี Google</p>
+    </section>
+
+    <nav class="card toc" aria-label="สารบัญ">
+      <h2 style="font-size:1.2rem">สารบัญ</h2>
+      <ol>
+        <li><a href="#p1">เข้าสู่ระบบ</a></li>
+        <li><a href="#p2">หน้ารายการครัวเรือน</a></li>
+        <li><a href="#p3">เพิ่ม/แก้ไขครัวเรือน</a></li>
+        <li><a href="#p4">ใส่รูปภาพครัวเรือน</a></li>
+        <li><a href="#p5">ยินยอมและเผยแพร่ (PDPA)</a></li>
+        <li><a href="#p6">ลบครัวเรือน</a></li>
+        <li><a href="#p7">ผู้แสดงความประสงค์ช่วยเหลือ</a></li>
+        <li><a href="#p8">เขียนรายงานผลการช่วยเหลือ</a></li>
+        <li><a href="#p9">พิมพ์ / บันทึกรายงานเป็น PDF</a></li>
+        <li><a href="#p10">ปัญหาที่พบบ่อย</a></li>
+      </ol>
+    </nav>
+
+    <!-- 1 -->
+    <section class="part" id="p1">
+      <h2><span class="no">1</span>เข้าสู่ระบบ</h2>
+      <div class="step">
+        <div>
+          <h3>เปิดหน้าเจ้าหน้าที่</h3>
+          <ol>
+            <li>เปิดหน้าเว็บ Catalog (จากริชเมนู LINE หรือลิงก์ด้านบน)</li>
+            <li>กดปุ่ม <span class="btnlike">🔐 เจ้าหน้าที่</span> ที่มุมขวาบน <span class="mark">(กรอบสีแดง)</span></li>
+          </ol>
+          <p class="tip">ปุ่มนี้มีทุกหน้าของเว็บ ประชาชนทั่วไปกดได้แต่เข้าไม่ได้ถ้าไม่มีรหัส</p>
+        </div>
+        <figure class="shot"><img src="img/01-home.jpg" alt="หน้าแรกของเว็บ มีปุ่มเจ้าหน้าที่มุมขวาบน" loading="lazy"><figcaption>หน้าแรก → ปุ่ม 🔐 เจ้าหน้าที่</figcaption></figure>
+      </div>
+      <div class="step">
+        <div>
+          <h3>ใส่รหัสเจ้าหน้าที่</h3>
+          <ol>
+            <li><b>เลือกอำเภอ</b>ของท่าน (ผู้ดูแลจังหวัดเลือก “ระดับจังหวัด (ทุกอำเภอ)”)</li>
+            <li><b>ใส่รหัส 6 หลัก</b></li>
+            <li>กด <span class="btnlike cta">เข้าสู่ระบบ</span></li>
+          </ol>
+          <p class="tip">ระบบ<b>จำการเข้าระบบไว้ในเครื่อง</b> ปิดแอปแล้วเปิดใหม่ไม่ต้องใส่รหัสซ้ำ (หลุดเองเมื่อไม่ได้ใช้งาน 6 ชั่วโมง)</p>
+          <p class="warn">⚠️ ใส่รหัสผิด 8 ครั้ง ระบบจะพักอำเภอนั้น 15 นาที · ใช้เครื่องร่วมกับคนอื่น ให้กด <span class="btnlike">ออกจากระบบ</span> ทุกครั้ง · ห้ามส่งรหัสในกลุ่ม LINE ที่มีคนนอก</p>
+        </div>
+        <figure class="shot"><img src="img/02-login.jpg" alt="หน้าเข้าสู่ระบบ เลือกอำเภอและใส่รหัส 6 หลัก" loading="lazy"><figcaption>เลือกอำเภอ → ใส่รหัส → เข้าสู่ระบบ</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="part keep" id="p2">
+      <h2><span class="no">2</span>หน้ารายการครัวเรือน</h2>
+      <div class="step">
+        <div>
+          <p>เข้าระบบแล้วจะเห็นครัวเรือน<b>ทั้งหมดของอำเภอ</b> (รวมที่ยังไม่เผยแพร่บนเว็บ)</p>
+          <ul>
+            <li><b>เมนูเจ้าหน้าที่</b> ด้านบน: <span class="btnlike">📋 ครัวเรือน</span> <span class="btnlike">📝 รายงานผล</span> <span class="btnlike">📨 ผู้ประสงค์ช่วยเหลือ</span> <span class="btnlike">📖 คู่มือ</span> (เปิดคู่มือนี้) <span class="btnlike">ออกจากระบบ</span></li>
+            <li><b>ตัวกรอง</b>: ทั้งหมด / ข้อมูลไม่ครบ / รอหนังสือยินยอม / รออนุมัติเผยแพร่ / เผยแพร่แล้ว — ตัวเลขบอกจำนวนในแต่ละกลุ่ม</li>
+            <li><b>ช่องค้นหา</b>: พิมพ์ชื่อ รหัส หรือตำบล</li>
+            <li>ป้ายสีใต้ชื่อบอกว่า<b>ยังขาดข้อมูลอะไร</b> เช่น “⚠ ขาด: จำนวนสมาชิก”</li>
+            <li>แตะชื่อครัวเรือนเพื่อ<b>แก้ไข</b> · กดปุ่มสีส้ม <span class="btnlike cta">＋ เพิ่มครัวเรือน</span> มุมขวาล่างเพื่อเพิ่มใหม่</li>
+          </ul>
+          <p class="tip">ผู้ดูแลระดับจังหวัดจะมีช่อง<b>เลือกอำเภอ</b>ข้างชื่อด้านบน เพื่อสลับดูทุกอำเภอ</p>
+        </div>
+        <figure class="shot"><img src="img/03-list.jpg" alt="รายการครัวเรือนของอำเภอ พร้อมตัวกรองและปุ่มเพิ่มครัวเรือน" loading="lazy"><figcaption>รายการครัวเรือนของอำเภอ</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" id="p3">
+      <h2><span class="no">3</span>เพิ่ม/แก้ไขครัวเรือน</h2>
+      <div class="step">
+        <div>
+          <h3>ข้อมูลครัวเรือนและสมาชิก</h3>
+          <ol>
+            <li>กรอก <b>ชื่อ-นามสกุลหัวหน้าครัวเรือน</b>, <b>หมู่ที่</b> และ <b>ตำบล</b> (3 ช่องนี้จำเป็น) ระบบสร้างรหัสครัวเรือนให้เอง เช่น RN-0005</li>
+            <li>บ้านเลขที่ใส่ได้ทั้งแบบ 45 หรือ 45/2</li>
+            <li>จำนวนสมาชิก และกลุ่มเปราะบาง (ผู้สูงอายุ ผู้พิการ ผู้ป่วยติดเตียง เด็ก) กดปุ่ม <span class="btnlike">−</span> / <span class="btnlike">＋</span></li>
+          </ol>
+        </div>
+        <figure class="shot"><img src="img/04-new-top.jpg" alt="ฟอร์มเพิ่มครัวเรือน ส่วนข้อมูลครัวเรือนและสมาชิก" loading="lazy"><figcaption>ช่องจำเป็นมีเครื่องหมาย *</figcaption></figure>
+      </div>
+      <div class="step">
+        <div>
+          <h3>ปัญหาและความต้องการ</h3>
+          <ol>
+            <li><b>สภาพปัญหา</b>: เล่าสั้น ๆ 2–4 ประโยค แล้วเลือก<b>มิติปัญหา (TPMAP)</b></li>
+            <li><b>ความต้องการ</b>: บรรทัดละ 1 รายการ กด <span class="btnlike">＋ เพิ่มรายการ</span> เพื่อเพิ่มบรรทัด กด ✕ เพื่อลบ — <b>ไม่ต้องใส่จำนวนเงิน</b></li>
+            <li>เลือก<b>หมวดความต้องการ</b> และ<b>ความเร่งด่วน</b> (ช่วยให้บริษัทค้นหาครัวเรือนที่ตรงกับนโยบาย CSR)</li>
+            <li>กด <span class="btnlike cta">💾 บันทึก</span> ที่แถบล่าง</li>
+          </ol>
+          <p class="tip">ชื่อและเบอร์ <b>พัฒนากรผู้ดูแล</b> (ข้อ 8) ระบบจำไว้ให้ ครัวเรือนถัดไปไม่ต้องพิมพ์ซ้ำ · <b>หมายเหตุภายใน</b> ไม่แสดงบนเว็บ ใช้จดเบอร์โทรครัวเรือนได้</p>
+        </div>
+        <figure class="shot"><img src="img/05-new-needs.jpg" alt="ฟอร์มส่วนสภาพปัญหาและความต้องการ" loading="lazy"><figcaption>ความต้องการบรรทัดละ 1 รายการ</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="part keep" id="p4">
+      <h2><span class="no">4</span>ใส่รูปภาพครัวเรือน</h2>
+      <div class="step">
+        <div>
+          <ol>
+            <li>บันทึกข้อมูลครั้งแรกก่อน ช่องรูปจะขึ้นในข้อ 5</li>
+            <li><b>แตะช่องรูป</b> → เลือก<b>ถ่ายรูป</b>หรือ<b>เลือกจากอัลบั้ม</b> ระบบย่อรูปและบันทึกให้ทันที (ขึ้น ✅ บันทึกรูปแล้ว)</li>
+            <li>ใส่ให้ครบ 4 ช่อง: <b>ภาพบ้าน</b> (ใช้เป็นภาพหลัก) · <b>ภาพครอบครัว</b> · <b>ภาพสภาพปัญหา</b> · <b>ภาพความเป็นอยู่</b></li>
+            <li>อยากเปลี่ยนรูป แตะช่องเดิมแล้วเลือกรูปใหม่ได้เลย</li>
+          </ol>
+          <p class="warn">⚠️ หลีกเลี่ยงรูปที่เห็นหน้าเด็กชัดเจน หรือรูปที่ทำให้ครัวเรือนเสียศักดิ์ศรี · รูปจะแสดงบนเว็บเมื่อครัวเรือนได้รับอนุมัติเผยแพร่แล้วเท่านั้น</p>
+        </div>
+        <figure class="shot"><img src="img/06-photos.jpg" alt="ช่องรูป 4 ช่อง แตะเพื่อถ่ายหรือเลือกรูป" loading="lazy"><figcaption>แตะช่องเพื่อถ่าย/เลือกรูป</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" id="p5">
+      <h2><span class="no">5</span>ยินยอมและเผยแพร่ (PDPA)</h2>
+      <div class="step">
+        <div>
+          <ol>
+            <li>ให้หัวหน้าครัวเรือนลงนาม<b>หนังสือยินยอมเปิดเผยข้อมูล</b> เก็บต้นฉบับไว้ที่สำนักงาน</li>
+            <li>ติ๊ก <b>มีหนังสือยินยอมที่หัวหน้าครัวเรือนลงนามแล้ว</b></li>
+            <li>ตรวจข้อมูลให้ถูกต้อง แล้วติ๊ก <b>อนุมัติให้แสดงบนเว็บ</b> (ติ๊กได้เมื่อมีหนังสือยินยอมแล้วเท่านั้น)</li>
+            <li>กด <span class="btnlike cta">💾 บันทึก</span> — ครัวเรือนจะขึ้นบนเว็บและ E-book ภายในประมาณ 10 นาที</li>
+          </ol>
+          <p class="tip">ต้องการ<b>ซ่อนจากเว็บชั่วคราว</b> → เอาเครื่องหมาย “อนุมัติให้แสดงบนเว็บ” ออกแล้วบันทึก (ข้อมูลยังอยู่ครบ)</p>
+          <p>เว็บไม่แสดงเบอร์โทรและเลขบัตรประชาชนของครัวเรือน ผู้สนใจช่วยเหลือติดต่อผ่าน<b>พัฒนากรผู้ดูแล</b>เท่านั้น</p>
+        </div>
+        <figure class="shot"><img src="img/07-consent.jpg" alt="ส่วนการเผยแพร่ ติ๊กยินยอมและอนุมัติ แล้วกดบันทึก" loading="lazy"><figcaption>ติ๊กยินยอม → อนุมัติ → บันทึก</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="part keep" id="p6">
+      <h2><span class="no">6</span>ลบครัวเรือน</h2>
+      <div class="step">
+        <div>
+          <p>ใช้เมื่อ<b>กรอกซ้ำ กรอกผิดคน</b> หรือครัวเรือน<b>ไม่อยู่ในเป้าหมายแล้ว</b></p>
+          <ol>
+            <li>แตะครัวเรือนที่ต้องการลบ แล้วเลื่อนลงล่างสุด</li>
+            <li>กล่องขอบแดง <b>ลบครัวเรือน</b> → กด <span class="btnlike red">🗑️ ลบครัวเรือนนี้</span></li>
+            <li>ตรวจชื่อและรหัสในกล่องยืนยัน แล้วกด <span class="btnlike red">🗑️ ลบครัวเรือน</span> (กด <span class="btnlike">ยกเลิก</span> ถ้าไม่แน่ใจ)</li>
+          </ol>
+          <p class="tip">ข้อมูล<b>ไม่หายถาวร</b> — ย้ายไปเก็บในแท็บ “ครัวเรือนที่ลบ” ของ Google Sheet ถ้าลบผิด แจ้งผู้ดูแลจังหวัดกู้คืนได้ · รายงานผลที่เคยเขียนไว้ยังอยู่</p>
+        </div>
+        <figure class="shot"><img src="img/08-delete.jpg" alt="ปุ่มลบครัวเรือนท้ายหน้าแก้ไข" loading="lazy"><figcaption>ปุ่มลบอยู่ท้ายหน้าแก้ไข</figcaption></figure>
+      </div>
+      <div class="step flip">
+        <div>
+          <h3>กล่องยืนยันก่อนลบ</h3>
+          <p>ระบบถามยืนยันทุกครั้ง พร้อมบอกชื่อและรหัสครัวเรือน เพื่อกันการลบผิดคน</p>
+        </div>
+        <figure class="shot"><img src="img/09-delete-confirm.jpg" alt="กล่องยืนยันการลบครัวเรือน" loading="lazy"><figcaption>ยืนยันการลบ</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="part" id="p7">
+      <h2><span class="no">7</span>ผู้แสดงความประสงค์ช่วยเหลือ</h2>
+      <div class="step">
+        <div>
+          <p>เมื่อหน่วยงาน/บริษัทกด <b>“ฉันอยากช่วย”</b> บนเว็บ แอดมินอำเภอจะได้รับอีเมลแจ้ง และรายการจะขึ้นที่เมนู <span class="btnlike">📨 ผู้ประสงค์ช่วยเหลือ</span></p>
+          <ol>
+            <li>ดูชื่อหน่วยงาน ผู้ติดต่อ เบอร์โทร (แตะเบอร์เพื่อโทรได้เลย) และรายการที่อยากช่วย</li>
+            <li><b>ติดต่อกลับภายใน 3 วันทำการ</b></li>
+            <li>เลือก<b>สถานะการติดต่อ</b> (ใหม่ / ติดต่อแล้ว / กำลังดำเนินการ / ส่งมอบแล้ว / ยกเลิก) ใส่ชื่อ<b>ผู้รับเรื่อง</b> แล้วกด <span class="btnlike cta">บันทึก</span></li>
+          </ol>
+          <p class="tip">ระหว่างประสานงาน ให้เปลี่ยนสถานะครัวเรือน (ข้อ 6 ในหน้าแก้ไขครัวเรือน) เป็น “กำลังดำเนินการ” และเป็น “ช่วยเหลือแล้ว” เมื่อส่งมอบเสร็จ</p>
+        </div>
+        <figure class="shot"><img src="img/10-pledges.jpg" alt="รายการผู้แสดงความประสงค์ช่วยเหลือ พร้อมช่องอัปเดตสถานะ" loading="lazy"><figcaption>อัปเดตสถานะการติดต่อ</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="part" id="p8">
+      <h2><span class="no">8</span>เขียนรายงานผลการช่วยเหลือ</h2>
+      <div class="step">
+        <div>
+          <h3>เปิดรายงานใหม่</h3>
+          <ol>
+            <li>กดเมนู <span class="btnlike">📝 รายงานผล</span> → ปุ่มสีส้ม <span class="btnlike cta">＋ รายงานใหม่</span></li>
+            <li>หรือเปิดหน้าแก้ไขครัวเรือน แล้วกด <span class="btnlike">📝 เขียนรายงานผลการช่วยเหลือ</span> (ระบบเลือกครัวเรือนให้)</li>
+          </ol>
+          <p>รายการรายงานเรียงล่าสุดก่อน ค้นหาด้วยชื่อ/รหัส/ผู้ให้การช่วยเหลือได้ แตะรายงานเพื่อดูหรือแก้ไข</p>
+        </div>
+        <figure class="shot"><img src="img/11-reports.jpg" alt="หน้ารายการรายงานผล" loading="lazy"><figcaption>เมนูรายงานผล → รายงานใหม่</figcaption></figure>
+      </div>
+      <div class="step">
+        <div>
+          <h3>ข้อมูลโครงการและผู้ได้รับความช่วยเหลือ</h3>
+          <ol>
+            <li><b>ข้อมูลโครงการ</b>: ผู้ให้การช่วยเหลือ (เช่น มูลนิธิ/บริษัท) ข้อความโครงการ/บันทึกข้อตกลง ครั้งที่รายงาน และวันที่ติดตาม — ระบบจำค่าล่าสุดไว้ให้</li>
+            <li><b>1. ชื่อ-นามสกุล</b>: <span class="mark">เลือกจากรายชื่อครัวเรือนใน Catalog เท่านั้น</span> (พิมพ์เองไม่ได้) ถ้ายังไม่มีชื่อ ให้เพิ่มครัวเรือนในข้อ 3 ก่อน</li>
+            <li>ข้อ 2–5 (อายุ จำนวนสมาชิก อาชีพ สถานที่ประกอบอาชีพ) กรอกเท่าที่มี — ปุ่ม 📍 ใช้ที่อยู่บ้านจาก Catalog ช่วยเติมที่อยู่ให้</li>
+          </ol>
+        </div>
+        <figure class="shot"><img src="img/12-report-person.jpg" alt="เลือกผู้ได้รับความช่วยเหลือจากรายชื่อครัวเรือนใน Catalog" loading="lazy"><figcaption>เลือกชื่อจาก Catalog</figcaption></figure>
+      </div>
+      <div class="step">
+        <div>
+          <h3>รายละเอียดการช่วยเหลือและผลลัพธ์</h3>
+          <ol>
+            <li><b>6. รายละเอียดการช่วยเหลือ</b>: เขียนเล่าว่า<b>ได้รับอะไร จากใคร เมื่อไร</b></li>
+            <li><b>7. ความเปลี่ยนแปลงด้านคุณภาพชีวิต</b> หลังได้รับความช่วยเหลือ</li>
+            <li><b>8. ปัญหา/อุปสรรค</b> (ไม่มีให้เว้นว่าง จะแสดงเป็น “-”)</li>
+          </ol>
+          <p class="tip">ข้อความยาวไม่เป็นไร ระบบย่อตัวอักษรให้พอดีกรอบในหน้า A4 เอง</p>
+        </div>
+        <figure class="shot"><img src="img/13-report-detail.jpg" alt="ช่องรายละเอียดการช่วยเหลือและผลลัพธ์" loading="lazy"><figcaption>เล่ารายละเอียดการช่วยเหลือ</figcaption></figure>
+      </div>
+      <div class="step">
+        <div>
+          <h3>รูปภาพ 5 ช่อง</h3>
+          <ul>
+            <li><b>ภาพการช่วยเหลือ 3 ภาพ</b> (แถวบนของรายงาน) เช่น การส่งมอบ ระหว่างดำเนินการ หลังดำเนินการ</li>
+            <li><b>ภาพผู้ได้รับความช่วยเหลือ</b> และ <b>ภาพที่อยู่อาศัย</b></li>
+          </ul>
+          <p>แตะช่องเพื่อถ่าย/เลือกรูป — <b>เลือกรูปก่อนกดบันทึกได้</b> ระบบจะอัปโหลดให้พร้อมกันตอนกด <span class="btnlike cta">💾 บันทึกรายงาน</span></p>
+          <p class="tip">รูปในรายงานผล<b>ไม่เผยแพร่สาธารณะ</b> เก็บใน Google Drive ของสำนักงานเท่านั้น</p>
+        </div>
+        <figure class="shot"><img src="img/14-report-photos.jpg" alt="ช่องรูปภาพการช่วยเหลือในรายงาน" loading="lazy"><figcaption>ภาพการช่วยเหลือ 3 + ผู้ได้รับ + ที่อยู่อาศัย</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="part" id="p9">
+      <h2><span class="no">9</span>พิมพ์ / บันทึกรายงานเป็น PDF</h2>
+      <div class="step">
+        <div>
+          <ol>
+            <li>กดบันทึกแล้วจะเห็น<b>หน้ารายงาน A4</b> ทันที</li>
+            <li>กด <span class="btnlike cta">🖨️ พิมพ์ / บันทึก PDF</span> → ในหน้าต่างพิมพ์ เลือกเครื่องพิมพ์ หรือเลือก <b>“บันทึกเป็น PDF”</b> เพื่อได้ไฟล์ส่งต่อ</li>
+            <li><span class="btnlike">＋ รายงานครั้งถัดไป</span>: ระบบยกข้อมูลเดิมมาให้และนับครั้งที่เพิ่มเอง เหลือแก้ผลลัพธ์และรูป</li>
+            <li><span class="btnlike">✏️ แก้ไข</span> / <span class="btnlike">🗑️ ลบ</span> รายงานได้จากหน้านี้</li>
+            <li>หน้ารายการรายงานมีปุ่ม <span class="btnlike">🖨️ พิมพ์ทั้งหมด</span> รวมทุกรายงาน (หรือเฉพาะผู้ให้การช่วยเหลือที่เลือก) เป็น PDF ไฟล์เดียว</li>
+          </ol>
+          <p class="tip">บนมือถือ: เมนูพิมพ์ของ Android/iPhone มีตัวเลือก “บันทึกเป็น PDF” หรือ “แชร์” ส่งต่อทาง LINE ได้</p>
+        </div>
+        <figure class="shot"><img src="img/15-report-view.jpg" alt="หน้าดูรายงานพร้อมปุ่มพิมพ์และรายงานครั้งถัดไป" loading="lazy"><figcaption>ปุ่มพิมพ์ / รายงานครั้งถัดไป</figcaption></figure>
+      </div>
+      <div class="step wide">
+        <div>
+          <h3>ตัวอย่างรายงาน 1 หน้า A4</h3>
+          <ul>
+            <li>หัวรายงาน: แบบรายงานผลการช่วยเหลือครัวเรือนเป้าหมาย + โครงการ + ผู้ให้การช่วยเหลือ</li>
+            <li>อำเภอ ครั้งที่รายงาน และวันที่ติดตาม</li>
+            <li>ภาพการช่วยเหลือ 3 ภาพ, ข้อ 1–5 ข้อมูลผู้ได้รับ, ข้อ 6 รายละเอียด, ภาพผู้ได้รับ/ที่อยู่อาศัย, ข้อ 7–8 ผลลัพธ์</li>
+            <li>ท้ายหน้ามีชื่อผู้รายงานและรหัสรายงาน</li>
+          </ul>
+          <p class="muted">(ภาพประกอบในคู่มือนี้ใช้ข้อมูลและรูปตัวอย่าง ชื่อเป็นชื่อสมมติ)</p>
+        </div>
+        <figure class="shot paper"><img src="img/16-report-a4.jpg" alt="ตัวอย่างรายงานผลการช่วยเหลือ 1 หน้า A4" loading="lazy"><figcaption>ตัวอย่างรายงานผล (ข้อมูลสมมติ)</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="part keep" id="p10">
+      <h2><span class="no">10</span>ปัญหาที่พบบ่อย</h2>
+      <div class="card" style="margin-top:12px">
+        <table class="faq">
+          <tr><td>ลืมรหัส / รหัสหลุดไปถึงคนอื่น</td><td>แจ้งผู้ดูแลระบบ สพจ.สงขลา ให้ตั้งรหัสใหม่เฉพาะอำเภอของท่าน (อำเภออื่นไม่กระทบ) ผู้ที่ใช้รหัสเดิมจะหลุดจากระบบทันที</td></tr>
+          <tr><td>ขึ้น “ใส่รหัสผิดหลายครั้ง กรุณารอ 15 นาที”</td><td>รอ 15 นาทีแล้วลองใหม่ หรือแจ้งผู้ดูแลจังหวัดตั้งรหัสใหม่ (ปลดการพักให้ทันที)</td></tr>
+          <tr><td>ขึ้น “หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่”</td><td>ไม่ได้ใช้งานเกิน 6 ชั่วโมง หรือรหัสถูกเปลี่ยน — เข้าระบบใหม่ด้วยรหัสล่าสุด</td></tr>
+          <tr><td>เปิดครั้งแรกโหลดนาน</td><td>ครั้งแรกของวันอาจใช้ 10–15 วินาที (เซิร์ฟเวอร์ Google กำลังเริ่มทำงาน) ครั้งต่อไปจะเร็วขึ้น ถ้าขึ้นข้อผิดพลาดให้กด “ลองใหม่”</td></tr>
+          <tr><td>ขึ้น “Sorry, unable to open the file at this time”</td><td>เปิดจากลิงก์เก่า (script.google.com) ในเบราว์เซอร์ที่ล็อกอิน Google หลายบัญชี — ให้ใช้ลิงก์ใหม่ <b>nuttasittong.github.io/catalog-songkhla</b></td></tr>
+          <tr><td>อัปโหลดรูปไม่ได้</td><td>ตรวจสัญญาณอินเทอร์เน็ต แล้วแตะช่องรูปเลือกใหม่ (ระบบย่อรูปให้อัตโนมัติ ไม่ต้องย่อเอง)</td></tr>
+          <tr><td>บันทึกแล้วยังไม่ขึ้นบนเว็บ</td><td>ต้องติ๊กทั้ง “มีหนังสือยินยอม” และ “อนุมัติให้แสดงบนเว็บ” แล้วรอประมาณ 10 นาที</td></tr>
+          <tr><td>หาชื่อไม่เจอตอนเขียนรายงานผล</td><td>รายงานเลือกได้เฉพาะครัวเรือนใน Catalog ของอำเภอ — เพิ่มครัวเรือนก่อน (ข้อ 3) แล้วกลับมาเขียนรายงาน</td></tr>
+          <tr><td>ลบครัวเรือนผิด</td><td>แจ้งผู้ดูแลจังหวัด กู้คืนได้จากแท็บ “ครัวเรือนที่ลบ” ใน Google Sheet</td></tr>
+        </table>
+      </div>
+      <p class="tip">ติดต่อสอบถามการใช้งาน: ผู้ดูแลระบบ สำนักงานพัฒนาชุมชนจังหวัดสงขลา</p>
+    </section>
+
+    <footer>คู่มือเจ้าหน้าที่อำเภอ · Catalog ครัวเรือนยากจน จังหวัดสงขลา · สำนักงานพัฒนาชุมชนจังหวัดสงขลา</footer>
+  </main>
+
+  <button class="print-btn" type="button" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script>
+    // ให้หัวข้อแต่ละส่วนอยู่หน้าเดียวกับขั้นตอนแรกเสมอเวลาพิมพ์ (ไม่ค้างอยู่ท้ายหน้า)
+    document.querySelectorAll('.part > h2').forEach(function (h) {
+      var next = h.nextElementSibling;
+      var g = document.createElement('div');
+      g.className = 'keep-group';
+      h.parentNode.insertBefore(g, h);
+      g.appendChild(h);
+      if (next) g.appendChild(next);
+    });
+    // ลิงก์หน้าเจ้าหน้าที่ของเว็บที่เปิดคู่มืออยู่ (โฮสต์ใหม่ก็ไม่ต้องแก้คู่มือ)
+    (function () {
+      var url = 'https://nuttasittong.github.io/catalog-songkhla/#/staff';
+      try {
+        if (/github\.io$/.test(location.hostname)) url = location.href.replace(/manual\/.*$/, '') + '#/staff';
+      } catch (e) { /* ใช้ค่าเริ่มต้น */ }
+      document.getElementById('staff-url').textContent = url;
+      try {
+        var qr = qrcode(0, 'M');
+        qr.addData(url);
+        qr.make();
+        document.getElementById('qr').innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+      } catch (e) {
+        document.getElementById('qr').style.display = 'none';
+      }
+    })();
+  </script>
+</body>
+</html>
