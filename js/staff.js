@@ -209,6 +209,28 @@ window.Staff = (() => {
 
   // ---------- เพิ่ม/แก้ไขครัวเรือน ----------
   const VULN = [['elderly', '👵 ผู้สูงอายุ'], ['disabled', '♿ ผู้พิการ'], ['bedridden', '🛏️ ผู้ป่วยติดเตียง'], ['children', '🧒 เด็ก']];
+
+  // ที่ดินและยานพาหนะ (ข้อมูลภายใน ไม่แสดงบนเว็บสาธารณะ) — ค่าต้องตรงกับ LAND_STATUS / VEHICLE_* ใน Config.gs
+  const LANDS = [['farmland', '🌾 ที่ดินทำกิน'], ['homeland', '🏡 ที่ดินที่อยู่อาศัย']];
+  const LAND_STATUS = [['มี', 'มี'], ['เช่า', 'เช่า'], ['ไม่มี', 'ไม่มี']];
+  const LAND_UNITS = ['ไร่', 'ตารางวา'];
+  const VEHICLES = [['car', '🚗 รถยนต์'], ['moto', '🛵 รถจักรยานยนต์']];
+  const CONDITIONS = ['ดี', 'พอใช้', 'ชำรุด'];
+
+  const radios = (name, options, value) => `<div class="seg asset-seg n${options.length}">${options.map(([v, l]) =>
+    `<label><input type="radio" name="${name}" value="${esc(v)}"${v === value ? ' checked' : ''}><span>${esc(l)}</span></label>`).join('')}</div>`;
+
+  const landField = (k, label, h) => `<div class="asset" data-asset="${k}"><p class="field-label">${label}</p>
+    ${radios(k, LAND_STATUS, h[k])}
+    <div class="asset-more land-size"${h[k] && h[k] !== 'ไม่มี' ? '' : ' hidden'}>
+      <label>ขนาด<input name="${k}Size" type="number" inputmode="decimal" min="0" step="any" value="${esc(h[k + 'Size'] || '')}" placeholder="เช่น 3"></label>
+      <label>หน่วย<select name="${k}Unit">${LAND_UNITS.map(u => `<option${u === (h[k + 'Unit'] || 'ไร่') ? ' selected' : ''}>${u}</option>`).join('')}</select></label>
+    </div></div>`;
+
+  const vehicleField = (k, label, h) => `<div class="asset" data-asset="${k}"><p class="field-label">${label}</p>
+    ${radios(k, [['มี', 'มี'], ['ไม่มี', 'ไม่มี']], h[k])}
+    <div class="asset-more"${h[k] === 'มี' ? '' : ' hidden'}><p class="asset-sub">สภาพรถ</p>
+      ${radios(k + 'Condition', CONDITIONS.map(c => [c, c]), h[k + 'Condition'])}</div></div>`;
   const PHOTO_SLOTS = [['🏠', 'ภาพบ้าน'], ['👨‍👩‍👧', 'ภาพครอบครัว'], ['🛠️', 'ภาพสภาพปัญหา'], ['🌿', 'ภาพความเป็นอยู่']];
 
   const stepper = (name, value, label) => `<div class="stepper-field"><span>${label}</span>
@@ -227,7 +249,7 @@ window.Staff = (() => {
     const isNew = !id;
     const last = store.get(OFFICER) || {};
     const h = isNew ? { amphoeCode: current(), name: '', houseNo: '', moo: '', tambon: '', members: '', elderly: 0, disabled: 0,
-      bedridden: 0, children: 0, problem: '', dimensions: [], needs: [], categories: [], urgency: '', helpReceived: '',
+      bedridden: 0, children: 0, farmland: '', homeland: '', car: '', moto: '', problem: '', dimensions: [], needs: [], categories: [], urgency: '', helpReceived: '',
       status: STATUSES[0], consent: false, approved: false, officer: last.officer || '', officerPhone: last.officerPhone || '', note: '' }
       : list.households.find(x => x.id === id);
     if (!h) throw new Error('ไม่พบครัวเรือน ' + id);
@@ -253,12 +275,18 @@ window.Staff = (() => {
           ${VULN.map(([k, label]) => stepper(k, h[k], label)).join('')}</div>
       </section>
 
-      <section class="box"><h2>3. สภาพปัญหาและความเดือดร้อน <em>*</em></h2>
+      <section class="box"><h2>3. ที่ดินและยานพาหนะ</h2>
+        <p class="muted small">ข้อมูลภายในสำหรับวิเคราะห์ ไม่แสดงบนเว็บ · ที่ดิน “มี” = เป็นของตนเองหรือครอบครัว · ถ้ายังไม่ทราบให้เว้นไว้</p>
+        ${LANDS.map(([k, label]) => landField(k, label, h)).join('')}
+        ${VEHICLES.map(([k, label]) => vehicleField(k, label, h)).join('')}
+      </section>
+
+      <section class="box"><h2>4. สภาพปัญหาและความเดือดร้อน <em>*</em></h2>
         <textarea name="problem" rows="4" placeholder="เล่าสั้น ๆ 2–4 ประโยค ว่าครัวเรือนเดือดร้อนเรื่องอะไร">${esc(h.problem)}</textarea>
         <p class="field-label">มิติปัญหา (TPMAP)</p>${chips('dimensions', UI.DIMENSIONS, h.dimensions)}
       </section>
 
-      <section class="box"><h2>4. ความต้องการ <em>*</em></h2>
+      <section class="box"><h2>5. ความต้องการ <em>*</em></h2>
         <p class="muted small">บรรทัดละ 1 รายการ ไม่ต้องใส่จำนวนเงิน</p>
         <div id="needs">${(h.needs.length ? h.needs : ['']).map(needRow).join('')}</div>
         <button type="button" class="btn btn-small btn-outline" id="need-add">＋ เพิ่มรายการ</button>
@@ -268,7 +296,7 @@ window.Staff = (() => {
           `<label><input type="radio" name="urgency" value="${v}"${Number(h.urgency) === v ? ' checked' : ''}><span>${l}</span></label>`).join('')}</div>
       </section>
 
-      <section class="box"><h2>5. รูปภาพ</h2>
+      <section class="box"><h2>6. รูปภาพ</h2>
         ${isNew ? '<p class="notice">บันทึกข้อมูลครั้งแรกก่อน แล้วจึงเพิ่มรูปได้</p>' : `
         <p class="muted small">แตะช่องเพื่อถ่ายรูปหรือเลือกจากอัลบั้ม ระบบย่อรูปให้อัตโนมัติ · หลีกเลี่ยงรูปที่เห็นหน้าเด็กชัดเจน</p>
         <div class="photo-slots">${PHOTO_SLOTS.map(([icon, label], i) => `<label class="photo-slot" data-slot="${i}">
@@ -277,19 +305,19 @@ window.Staff = (() => {
           <span class="ps-label">${label}</span><span class="ps-state"></span></label>`).join('')}</div>`}
       </section>
 
-      <section class="box"><h2>6. การช่วยเหลือและสถานะ</h2>
+      <section class="box"><h2>7. การช่วยเหลือและสถานะ</h2>
         <label>การช่วยเหลือที่ได้รับแล้ว<textarea name="helpReceived" rows="2">${esc(h.helpReceived)}</textarea></label>
         <label>สถานะ<select name="status">${STATUSES.map(s => `<option${s === h.status ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select></label>
       </section>
 
-      <section class="box"><h2>7. การเผยแพร่ (PDPA)</h2>
+      <section class="box"><h2>8. การเผยแพร่ (PDPA)</h2>
         <label class="check"><input type="checkbox" name="consent"${h.consent ? ' checked' : ''}>
           <span><b>มีหนังสือยินยอมที่หัวหน้าครัวเรือนลงนามแล้ว</b></span></label>
         <label class="check"><input type="checkbox" name="approved"${h.approved ? ' checked' : ''}${h.consent ? '' : ' disabled'}>
           <span><b>อนุมัติให้แสดงบนเว็บ</b><br><small class="muted">ตรวจข้อมูลแล้ว เผยแพร่ได้ (ต้องมีหนังสือยินยอมก่อน)</small></span></label>
       </section>
 
-      <section class="box"><h2>8. ผู้ดูแลและหมายเหตุ</h2>
+      <section class="box"><h2>9. ผู้ดูแลและหมายเหตุ</h2>
         <div class="two">
           <label>พัฒนากรผู้ดูแล<input name="officer" value="${esc(h.officer)}"></label>
           <label>เบอร์พัฒนากร (แสดงบนเว็บ)<input name="officerPhone" type="tel" inputmode="tel" value="${esc(h.officerPhone)}"></label>
@@ -317,6 +345,13 @@ window.Staff = (() => {
       if (!dirty) return;
       e.preventDefault();
       if (await UI.ask('ยังไม่ได้บันทึก ต้องการออกจากหน้านี้หรือไม่?', 'ออกโดยไม่บันทึก', true)) location.hash = '#/staff/list';
+    });
+    // ที่ดิน: มี/เช่า → ถามขนาด · ยานพาหนะ: มี → ถามสภาพ
+    form.addEventListener('change', e => {
+      const box = e.target.closest('.asset');
+      if (!box || e.target.name !== box.dataset.asset) return;
+      const isLand = /land$/.test(box.dataset.asset);
+      $('.asset-more', box).hidden = isLand ? e.target.value === 'ไม่มี' : e.target.value !== 'มี';
     });
     form.consent.addEventListener('change', () => {
       form.approved.disabled = !form.consent.checked;
@@ -355,6 +390,10 @@ window.Staff = (() => {
         id: h.id, amphoeCode: h.amphoeCode || current(), name: val('name'), houseNo: val('houseNo'), moo: val('moo'),
         tambon: val('tambon'), members: val('members'), elderly: val('elderly'), disabled: val('disabled'),
         bedridden: val('bedridden'), children: val('children'), problem: val('problem'), dimensions: checked('dimensions'),
+        farmland: checked('farmland')[0] || '', farmlandSize: val('farmlandSize'), farmlandUnit: val('farmlandUnit'),
+        homeland: checked('homeland')[0] || '', homelandSize: val('homelandSize'), homelandUnit: val('homelandUnit'),
+        car: checked('car')[0] || '', carCondition: checked('carCondition')[0] || '',
+        moto: checked('moto')[0] || '', motoCondition: checked('motoCondition')[0] || '',
         needs: $$('input[name="need"]', form).map(x => x.value.trim()).filter(Boolean), categories: checked('categories'),
         urgency: (checked('urgency')[0] || ''), helpReceived: val('helpReceived'), status: val('status'),
         consent: form.consent.checked, approved: form.approved.checked, officer: val('officer'),

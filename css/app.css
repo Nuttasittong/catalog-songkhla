@@ -391,6 +391,15 @@ main { max-width: 1120px; margin: 0 auto; padding: 16px; outline: none; }
 .seg span { display: block; text-align: center; padding: 10px 4px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; }
 .seg input:checked + span { background: var(--brand); color: #fff; border-color: var(--brand); }
 .seg input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--brand) 35%, transparent); }
+/* ที่ดินและยานพาหนะ */
+.asset { padding: 10px 0 12px; border-top: 1px dashed var(--line); }
+.asset:first-of-type { border-top: 0; padding-top: 4px; }
+.asset .field-label { margin: 0 0 6px; }
+.asset-seg.n2 { grid-template-columns: repeat(2, 1fr); }
+.asset-more { margin-top: 10px; }
+.asset-more.land-size { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.asset-more[hidden] { display: none; }
+.asset-sub { margin: 0 0 6px; font-size: .9rem; color: var(--muted); font-weight: 600; }
 .photo-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .photo-slot { display: flex; flex-direction: column; gap: 4px; cursor: pointer; font-weight: 600 !important; text-align: center; }
 .ps-img { aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; border: 2px dashed color-mix(in srgb, var(--brand) 35%, white); background: var(--brand-soft); }
